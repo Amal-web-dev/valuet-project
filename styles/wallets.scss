@@ -171,10 +171,11 @@ $oranBlack: #ed6480;
    justify-content: center;
    align-items: center;
    flex-direction: column;
-   gap: 8px;
+   gap: 6px;
    span{
       @include RegularFont($colorTwo);
       font-size:16px;
+      margin-top: 25px;
    }
    p{
       @include BoldFont($white);
@@ -266,36 +267,35 @@ $oranBlack: #ed6480;
       &::-webkit-scrollbar {
          display: none;
       }
-      .item {
+      .item-wallet {
          display: flex;
-         justify-content: space-between;
          align-items: center;
 
-         gap: 12px;
+         gap: 15px;
          width: 100%;
-         max-width: 600px;
+         max-width: 580px;
 
-         border:1px solid #1288e8;
-         &__left {
+         .item__left {
             @include SemiboldFont($colorTwo);
             font-size: 14px;
          }
 
-         &__right {
+         .item__right {
             width: 100%;
             max-width: 500px;
             display: flex;
             justify-content: space-between;
             align-items: center;
          }
-         &__box{
+         .item__box{
             display: flex;
          }
-         &__text-box {
+         .item__text-box {
             display: flex;
             flex-direction: column;
             align-items: start;
             gap: 5px;
+            margin-left: 20px;
             h5 {
                @include SemiboldFont($white);
                font-size: 12px;
@@ -306,7 +306,7 @@ $oranBlack: #ed6480;
             }
          }
 
-         &__price {
+         .item__price {
             @include RegularFont($white);
             font-size: 14px;
          }

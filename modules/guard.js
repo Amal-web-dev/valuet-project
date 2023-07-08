@@ -1,4 +1,5 @@
-let user = JSON.parse(localStorage.getItem('user'));
+const user = JSON.parse(localStorage.getItem('user'));
+
 
 if (!user) {
     location.assign('/auth/')

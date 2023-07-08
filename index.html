@@ -44,8 +44,8 @@
 					</nav>
 					<div class="aside_out">
 						<p id="ellipse"></p>
-						<a href="/auth/index.html">
-							<p id="out"> Log Out</p>
+						<a href="" id="log-out">
+							<p id="out">Log Out</p>
 						</a>
 					</div>
 				</div>
@@ -67,7 +67,7 @@
 							<!-- Balance -->
 							<div class="middle-container__balance middle-row">
 								<h4>Balance</h4>
-								<div class="circle"></div>
+									<canvas id="circle-overview-chart"  width="200px"></canvas>
 								<div class="middle-container__balance-wallet">
 									<div></div>
 									<p>Ethereum</p>
@@ -155,7 +155,7 @@
 									<div class="wl-chard__circle">
 										<div class="wl-chard__effect effect-chart">
 											<span>TOTAL</span>
-											<p>$67 421</p>
+											<p></p>
 										</div>
 										<canvas id="wl-chard__circle-chart"></canvas>
 									</div>
@@ -165,12 +165,15 @@
 							</div>
 							<div class="wallets__down-box dw-box">
 								<div class="dw-box__left">
-									<img src="./public/images/face.png" alt="" />
+									<canvas class="box-left" width="500px"></canvas>
 								</div>
 								<div class="dw-box__right right-block">
 									<div class="right-block__title">RECENT TRANSACTIONS</div>
 									<hr style="background-color: #2d317a" />
 									<div class="right-block__box">
+										<div class="item-wallet">
+                                         
+										</div>
 									</div>
 								</div>
 							</div>

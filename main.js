@@ -19,9 +19,9 @@ import {
 import axios from 'axios'
 import { user } from './modules/user.js'
 
-// if(Chart) {
-//    Chart.register(...registerables)
-// }
+if(Chart) {
+   Chart.register(...registerables)
+}
 
 const {request} = useHttp();
 let ellipse = document.querySelector('#ellipse')
@@ -311,7 +311,7 @@ currency_inp.oninput = () => {
 // market
 function marketChart(id) {
    const ctx = document.getElementById(id);
-   ctx.height = 47
+   ctx.height = 10
    new Chart(ctx, {
       type: "line",
       data: {
@@ -353,6 +353,7 @@ let box = document.querySelector('.wallets__top-box-cards');
 let items_box = document.querySelector('.right-block__box');
 const ctx = document.getElementById('wl-chard__circle-chart');
 let total_p = document.querySelector('.effect-chart p');
+export let itemWallet = document.querySelector('.item-wallet')
 request("/cards", "get")
    .then(res => {
       let [data, total] = reloadCard(res, box);
@@ -360,8 +361,20 @@ request("/cards", "get")
          type: 'doughnut',
          data: data,
          options: {
-            cutoutPercentage: 75
-         }
+            cutout: 40,
+            plugins: {
+            elements: {
+               arc: {
+                 borderWidth: 10, 
+                 borderColor: 'red' 
+               },
+               point: {
+                 radius: 10, 
+                 pointStyle: 'circle' 
+               }
+            }
+         },
+          }
       });
       total_p.innerText = `${total}$`;
       let items = document.querySelectorAll('.wallets__top-box-cards .cards-slide');
@@ -402,7 +415,6 @@ items_box.onscroll = () => {
 }
 
 effect.onclick = () => {
-
    items_box.scrollTop = items_box.scrollHeight;
 }
 
@@ -421,6 +433,38 @@ if (!localedSymbols) {
         }
      });
 }
+
+let boxLeft = document.querySelector('.box-left')
+
+request("/cards", "get")
+   .then(res => {
+     new Chart(boxLeft, {
+         type: 'line',
+         data: {
+            labels: ["February", "March", "April", "May", "June", "July"],
+            datasets: [{
+               label: "",
+               data: [0, 5000, 6500, 4500, 8200, 6700, 6000],
+               backgroundColor: ['#1288E8'],
+               borderColor: ['#1288E8'],
+               borderWidth: 2,
+               pointRadius: 0,
+          pointHitRadius: 10,
+          lineBorderRadius: 15
+            }],
+         },
+         options: {
+            responsive: false,
+            tensions: {
+               easing: 'easeInBounce',
+               from: 1,
+               to: 0,
+               loop: true,
+            }
+         },
+      });
+   })
+
 // Exchange 
 
 let currencyExchange = document.querySelector('.currency-exchange')
@@ -508,8 +552,51 @@ fromInput.onkeyup = () => {
 }
 
 
-// Пример использования
+let logOut = document.querySelector('#log-out')
 
-// if(fromInput.value.length > 1) {
+console.log(logOut);
 
-// }
+logOut.onclick = () => {
+  let con = confirm('are u sure?')
+   if(con) {
+      localStorage.removeItem("user");
+      location.assign("/auth/")
+   }
+}
+  
+
+let circleOverviewChart = document.querySelector('#circle-overview-chart')
+
+request("/cards", "get")
+   .then(res => {
+      new Chart(circleOverviewChart, { data: {
+         labels: ["February", "March", "April", "May", "June", "July"],
+         datasets: [{
+            label: "Balance",
+            type: 'doughnut',
+            data: [0, 5000, 6500, 4500, 8200, 6700, 6000],
+            backgroundColor: ['#1288E8', 'red', 'blue', 'black', 'green', 'white'],
+            borderColor: "transparent",
+            borderWidth: 2,
+            pointRadius: 0,
+       pointHitRadius: 10,
+       lineBorderRadius: 15
+         }],
+      },
+         options: {
+            cutout: 40,
+            plugins: {
+            elements: {
+               arc: {
+                 borderWidth: 10, 
+                 borderColor: 'red' 
+               },
+               point: {
+                 radius: 10, 
+                 pointStyle: 'circle' 
+               }
+            }
+         },
+          }
+      });
+   })
