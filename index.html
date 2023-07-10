@@ -23,7 +23,7 @@
 				<div class="container">
 					<div class="header">
 						<div class="header__left">
-							<input type="text" />
+							<input type="text" id="search" />
 						</div>
 						<div class="header__right">
 							<button class="mail btn_after"></button>
@@ -57,7 +57,7 @@
 						<div class="top__container dashboard-container">
 							<div class="top__container-left">
 								<h3>Overview</h3>
-								<span>25 October, Sundey</span>
+								<span id="date"></span>
 							</div>
 							<button class="top__container-right-btn">Add Widget</button>
 						</div>
@@ -94,7 +94,7 @@
 								</div>
 								<span class="middle-container__spend-total">$ 5,743.35</span>
 								<p class="middle-container__spend-text">total spending</p>
-								<img class="middle-container__spend-img" src="/public/images/spend.png" alt="" />
+								<canvas width="270px" height="271px" id="spending-chart"></canvas>
 							</div>
 							<!-- Wallets -->
 							<div class="middle-container__wallets middle-row">
@@ -102,7 +102,7 @@
 						</div>
 						<!-- Bottom Container -->
 						<div class="bottom__container dashboard-container">
-							<div class="bottom-row"></div>
+							<div class="bottom-row"><canvas width="824px" height="202px" id="market-chart"></canvas></div>
 							<div class="bottom-row bottom-news">
 								<h3>Recent News</h3>
 								<table class="bottom-news__table">
@@ -254,11 +254,26 @@
 					</div>
 				</div>
 				<div class="container" id="cont-market">
-					<div class="market-title">
-						<h2>Market</h2>
-					</div>
-					<div class="market-wrapper"></div>
-				</div>
+                    <div class="market-title">
+                        <h2>Market</h2>
+                    </div>
+                    <div class="market-wrapper">
+                        <div class="market_item">
+                            <div class="trans-row">
+                                <img src="/public/icons/bitcoin.svg" width="70px" height="70px" alt="img">
+                                <p class="market_title">name</p>
+                            </div>
+                            <p class="market_text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga minus
+                                eaque, ratione, doloribus, ab eius quam ipsa eos ex excepturi laudantium culpa ducimus.
+                                Fuga nemo reiciendis doloremque aut enim sunt!</p>
+                            <div class="canv_wrap">
+                                <canvas id="myChart4"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
 			</main>
 		</div>
 

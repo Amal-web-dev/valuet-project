@@ -2,6 +2,7 @@ import {
    v4 as uuidv4
 } from 'uuid';
 import {
+   marketNews,
    reloadCard,
    reloadMiniTransactions,
    reloadTransactions
@@ -19,11 +20,11 @@ import {
 import axios from 'axios'
 import { user } from './modules/user.js'
 
-if(Chart) {
+if (Chart) {
    Chart.register(...registerables)
 }
 
-const {request} = useHttp();
+const { request } = useHttp();
 let ellipse = document.querySelector('#ellipse')
 
 ellipse.innerHTML = `${user.name} ${user.surname}`
@@ -71,17 +72,17 @@ widgetForm.onsubmit = (e) => {
       "cryptoCurrency": "BTC",
       "walletContentPriceUSD": "30,000,000",
       "currencyBox": [{
-            "totalCurrency": "$1 200 = 0,074 BTC",
-            "cryptoCurrency": "1 BTC = $6 542, 35"
-         },
-         {
-            "totalCurrency": "$1 200 = 0,074 BTC",
-            "cryptoCurrency": "1 BTC = $6 542, 35"
-         },
-         {
-            "totalCurrency": "$1 200 = 0,074 BTC",
-            "cryptoCurrency": "1 BTC = $6 542, 35"
-         },
+         "totalCurrency": "$1 200 = 0,074 BTC",
+         "cryptoCurrency": "1 BTC = $6 542, 35"
+      },
+      {
+         "totalCurrency": "$1 200 = 0,074 BTC",
+         "cryptoCurrency": "1 BTC = $6 542, 35"
+      },
+      {
+         "totalCurrency": "$1 200 = 0,074 BTC",
+         "cryptoCurrency": "1 BTC = $6 542, 35"
+      },
       ]
    }
 
@@ -100,6 +101,73 @@ widgetForm.onsubmit = (e) => {
 addWidget.onclick = () => {
    widgetModal.style.display = 'flex'
 };
+
+let marketChart= document.querySelector('#market-chart')
+
+request("/cards", "get")
+   .then(res => {
+      new Chart(marketChart, {
+         type: 'line',
+         data: {
+            labels: ["February", "March", "April", "May", "June", "July"],
+            datasets: [{
+               label: '',
+               data: [0, 5000, 6500, 4500, 8200, 6700, 6000],
+               backgroundColor: ['#1288E8'],
+               borderColor: ['#1288E8'],
+               borderWidth: 2,
+               pointRadius: 0,
+               pointHitRadius: 10,
+               lineBorderRadius: 15,
+               tension: 0.5
+            }],
+         },
+         options: {
+            responsive: false,
+            tensions: {
+               easing: 'easeInBounce',
+               from: 1,
+               to: 0,
+               loop: true,
+            }
+         },
+      });
+   })
+
+   let spendingChart = document.querySelector('#spending-chart')
+
+   request("/overviews", "get")
+   .then(res => {
+      for (const item of res) {
+         console.log();
+      new Chart(spendingChart, {
+         type: 'line',
+         data: {
+            labels: ["February", "March", "April", "May", "June", "July"],
+            datasets: [{
+               label: '',
+               data: [0, 5000, 6500, 4500, 8200, 6700, 6000],
+               backgroundColor: ['#1288E8'],
+               borderColor: ['#1288E8'],
+               borderWidth: 2,
+               pointRadius: 0,
+               pointHitRadius: 10,
+               lineBorderRadius: 15,
+               tension: 0.5
+            }],
+         },
+         options: {
+            responsive: false,
+            tensions: {
+               easing: 'easeInBounce',
+               from: 1,
+               to: 0,
+               loop: true,
+            }
+         },
+      });
+   }
+   })
 
 // =====================
 
@@ -163,10 +231,10 @@ if (!localedSymbols) {
    axios
       .get(
          import.meta.env.VITE_CURRENCY_API, {
-            headers: {
-               apiKey: import.meta.env.VITE_API_KEY,
-            },
-         })
+         headers: {
+            apiKey: import.meta.env.VITE_API_KEY,
+         },
+      })
       .then((res) => {
          if (res.status === 200 || res.status === 201) {
             localStorage.setItem("symbols", JSON.stringify(res.data.symbols));
@@ -309,43 +377,47 @@ currency_inp.oninput = () => {
 };
 
 // market
-function marketChart(id) {
-   const ctx = document.getElementById(id);
-   ctx.height = 10
-   new Chart(ctx, {
-      type: "line",
-      data: {
-         labels: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-         datasets: [{
-            data: [1, 2, 2, 3, 1, 5, 1, 2, 2, 3, 1, 2],
-            fill: false,
-            pointRadius: 0
-         }]
-      },
-      options: {
-         scales: {
-            x: {
-               display: false
-            },
-            y: {
-               display: false
-            }
-         },
-         plugins: {
-            legend: {
-               display: false
-            }
-         },
-         elements: {
-            line: {
-               borderWidth: 3,
-               borderColor: '#00E8AC',
-               shadowColor: 'rgba(0,0,0,0.2)',
-               shadowBlur: 10
-            }
-         }
+let market_wrapper = document.querySelector(".market-wrapper")
+let localedNews = JSON.parse(localStorage.getItem("news"))
+let search = document.querySelector("#search")
+
+if (!localedNews) {
+
+   axios.get(`https://api.polygon.io/v2/reference/news?apiKey=MPgseTnEU5yriirwmBhnNkRftYkg1gxW`, {
+      headers: {
+         Authorization: `Bearer ${import.meta.env.VITE_TOKEN}`
       }
-   });
+
+   }).then(res => {
+
+      if (res.status === 200 || res.status === 201) {
+         localStorage.setItem("news", JSON.stringify(res.data.results))
+         marketNews(res.data.results, market_wrapper)
+      }
+
+   })
+} else {
+   marketNews(localedNews, market_wrapper)
+}
+
+
+search.onkeyup = () => {
+
+   let val = search.value.toLowerCase().trim()
+   console.log(val);
+
+
+   let filtered = localedNews.filter(news => {
+      let keyword = news.publisher.name.toLowerCase().trim()
+      console.log(keyword);
+      if (keyword.includes(val)) {
+         return news
+      }
+
+   })
+   marketNews(filtered, market_wrapper)
+
+
 }
 
 // wallets
@@ -363,18 +435,18 @@ request("/cards", "get")
          options: {
             cutout: 40,
             plugins: {
-            elements: {
-               arc: {
-                 borderWidth: 10, 
-                 borderColor: 'red' 
-               },
-               point: {
-                 radius: 10, 
-                 pointStyle: 'circle' 
+               elements: {
+                  arc: {
+                     borderWidth: 10,
+                     borderColor: 'red'
+                  },
+                  point: {
+                     radius: 10,
+                     pointStyle: 'circle'
+                  }
                }
-            }
-         },
-          }
+            },
+         }
       });
       total_p.innerText = `${total}$`;
       let items = document.querySelectorAll('.wallets__top-box-cards .cards-slide');
@@ -419,38 +491,39 @@ effect.onclick = () => {
 }
 
 if (!localedSymbols) {
-  axios
-     .get(
-        import.meta.env.VITE_CURRENCY_API, {
-           headers: {
-              apiKey: import.meta.env.VITE_API_KEY,
-           },
-        })
-     .then((res) => {
-        if (res.status === 200 || res.status === 201) {
-           localStorage.setItem("symbols", JSON.stringify(res.data.symbols));
-           setOption(res.data.symbols);
-        }
-     });
+   axios
+      .get(
+         import.meta.env.VITE_CURRENCY_API, {
+         headers: {
+            apiKey: import.meta.env.VITE_API_KEY,
+         },
+      })
+      .then((res) => {
+         if (res.status === 200 || res.status === 201) {
+            localStorage.setItem("symbols", JSON.stringify(res.data.symbols));
+            setOption(res.data.symbols);
+         }
+      });
 }
 
 let boxLeft = document.querySelector('.box-left')
 
 request("/cards", "get")
    .then(res => {
-     new Chart(boxLeft, {
+      new Chart(boxLeft, {
          type: 'line',
          data: {
             labels: ["February", "March", "April", "May", "June", "July"],
             datasets: [{
-               label: "",
+               label: '',
                data: [0, 5000, 6500, 4500, 8200, 6700, 6000],
                backgroundColor: ['#1288E8'],
                borderColor: ['#1288E8'],
                borderWidth: 2,
                pointRadius: 0,
-          pointHitRadius: 10,
-          lineBorderRadius: 15
+               pointHitRadius: 10,
+               lineBorderRadius: 15,
+               tension: 0.5
             }],
          },
          options: {
@@ -469,134 +542,154 @@ request("/cards", "get")
 
 let currencyExchange = document.querySelector('.currency-exchange')
 
-if(localedSymbols) {
-  setOptionExchange(localedSymbols)
+if (localedSymbols) {
+   setOptionExchange(localedSymbols)
 } else {
-  axios
-  .get(
-     import.meta.env.VITE_CURRENCY_API, {
-        headers: {
-           apiKey: import.meta.env.VITE_API_KEY,
-        },
-     })
-  .then((res) => {
-     if (res.status === 200 || res.status === 201) {
-        localStorage.setItem("symbols", JSON.stringify(res.data.symbols));
-        setOption(res.data.symbols);
-      }
-  })
+   axios
+      .get(
+         import.meta.env.VITE_CURRENCY_API, {
+         headers: {
+            apiKey: import.meta.env.VITE_API_KEY,
+         },
+      })
+      .then((res) => {
+         if (res.status === 200 || res.status === 201) {
+            localStorage.setItem("symbols", JSON.stringify(res.data.symbols));
+            setOption(res.data.symbols);
+         }
+      })
 }
 
 function setOptionExchange(data) {
-  for(let key in data) {
+   for (let key in data) {
       let opt = new Option(data[key], key)
 
       currencyExchange.append(opt)
-  }
+   }
 }
 
 const apiKey = "332555db6c7941f1a4f7a5c15e00f1ba";
 const amountInDollars = 100;
 let toInput = document.querySelector('.to-input')
 let fromInput = document.querySelector('.from-currency')
+let btnExchange = document.querySelector('.btn-exchange')
 
 
 
 // Функция для получения курса обмена валют
 function getExchangeRate(baseCurrency, targetCurrency) {
-  const rates = JSON.parse(localStorage.getItem('exchangeRates'));
-  
-  if (rates && rates[baseCurrency] && rates[baseCurrency][targetCurrency]) {
-    return Promise.resolve(rates[baseCurrency][targetCurrency]);
-  } else {
-    const url = `https://openexchangerates.org/api/latest.json?app_id=${apiKey}&base=${baseCurrency}`;
-  
-    return fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        const rate = data.rates[targetCurrency];
-        
-        const updatedRates = {
-          ...(rates || {}),
-          [baseCurrency]: {
-            ...(rates && rates[baseCurrency] || {}),
-            [targetCurrency]: rate
-          }
-        };
+   const rates = JSON.parse(localStorage.getItem('exchangeRates'));
 
-        localStorage.setItem('exchangeRates', JSON.stringify(updatedRates));
-        
-        return rate;
-      })
-      .catch(error => {
-        console.error("Error:", error);
-      });
-  }
+   if (rates && rates[baseCurrency] && rates[baseCurrency][targetCurrency]) {
+      return Promise.resolve(rates[baseCurrency][targetCurrency]);
+   } else {
+      const url = `https://openexchangerates.org/api/latest.json?app_id=${apiKey}&base=${baseCurrency}`;
+
+      return fetch(url)
+         .then(response => response.json())
+         .then(data => {
+            const rate = data.rates[targetCurrency];
+
+            const updatedRates = {
+               ...(rates || {}),
+               [baseCurrency]: {
+                  ...(rates && rates[baseCurrency] || {}),
+                  [targetCurrency]: rate
+               }
+            };
+
+            localStorage.setItem('exchangeRates', JSON.stringify(updatedRates));
+
+            return rate;
+         })
+         .catch(error => {
+            console.error("Error:", error);
+         });
+   }
 }
 
 // Функция для конвертации валют
 function convertCurrency(amount, baseCurrency, targetCurrency) {
-  return getExchangeRate(baseCurrency, targetCurrency)
-    .then(rate => {
-      const convertedAmount = amount * rate;
-      return convertedAmount;
-    });
+   return getExchangeRate(baseCurrency, targetCurrency)
+      .then(rate => {
+         const convertedAmount = amount * rate;
+         return convertedAmount;
+      });
 }
 
-fromInput.onkeyup = () => {
-  console.log(fromInput.value);
-  convertCurrency(+fromInput.value, 'USD', 'RUB')
-    .then(convertedAmount => {
-      toInput.value = +convertedAmount;
-    });
+btnExchange.onclick = () => {
+   console.log(fromInput.value);
+   convertCurrency(+fromInput.value, 'USD', 'RUB')
+      .then(convertedAmount => {
+         toInput.value = +convertedAmount;
+      });
 }
 
 
 let logOut = document.querySelector('#log-out')
 
-console.log(logOut);
 
 logOut.onclick = () => {
-  let con = confirm('are u sure?')
-   if(con) {
+   let con = confirm('are u sure?')
+   if (con) {
       localStorage.removeItem("user");
       location.assign("/auth/")
    }
 }
-  
+
 
 let circleOverviewChart = document.querySelector('#circle-overview-chart')
 
 request("/cards", "get")
    .then(res => {
-      new Chart(circleOverviewChart, { data: {
-         labels: ["February", "March", "April", "May", "June", "July"],
-         datasets: [{
-            label: "Balance",
-            type: 'doughnut',
-            data: [0, 5000, 6500, 4500, 8200, 6700, 6000],
-            backgroundColor: ['#1288E8', 'red', 'blue', 'black', 'green', 'white'],
-            borderColor: "transparent",
-            borderWidth: 2,
-            pointRadius: 0,
-       pointHitRadius: 10,
-       lineBorderRadius: 15
-         }],
-      },
+      new Chart(circleOverviewChart, {
+         data: {
+            labels: ["February", "March", "April", "May", "June", "July"],
+            datasets: [{
+               label: 'Balance',
+               type: 'doughnut',
+               data: [0, 5000, 6500, 4500, 8200, 6700, 6000],
+               backgroundColor: ['#1288E8', 'red', 'blue', 'black', 'green', 'white'],
+               borderColor: "transparent",
+               borderWidth: 2,
+               pointRadius: 0,
+               pointHitRadius: 10,
+               lineBorderRadius: 15
+            }],
+         },
          options: {
             cutout: 40,
             plugins: {
-            elements: {
-               arc: {
-                 borderWidth: 10, 
-                 borderColor: 'red' 
-               },
-               point: {
-                 radius: 10, 
-                 pointStyle: 'circle' 
+               elements: {
+                  arc: {
+                     borderWidth: 10,
+                     borderColor: 'red'
+                  },
+                  point: {
+                     radius: 10,
+                     pointStyle: 'circle'
+                  }
                }
-            }
-         },
-          }
+            },
+         }
       });
    })
+
+var days = [
+   'Воскресенье',
+   'Понедельник',
+   'Вторник',
+   'Среда',
+   'Четверг',
+   'Пятница',
+   'Суббота'
+];
+var d = new Date();
+var n = d.getDay();
+
+let dateSpan = document.querySelector('#date')
+const date = new Date();
+const monthName = date.toLocaleString('default', { month: 'long' });
+const monthDay = d.getDate()
+
+dateSpan.innerHTML = `${monthDay} ${monthName}, ${days[n]}`

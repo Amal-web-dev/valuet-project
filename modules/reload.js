@@ -1,3 +1,4 @@
+import { Chart } from "chart.js"
 import { getRandomColor } from "./http.requests"
 
 export function reloadTransactions(arr, place) {
@@ -118,3 +119,70 @@ export function reloadMiniTransactions(arr, place) {
    }
 }
 export function reloadCard(arr, place) { const data = { labels: [], datasets: [{ label: 'This card balance', data: [], backgroundColor: [], hoverOffset: 4, borderColor: "transparent",}], }; let total = 0; place.innerHTML = ' '; for (let item of maxBalanxe(arr)) { place.innerHTML += `<div class="cards-slide"><div class="item"><div class="item__title">${item.name}</div><div class="item__statistic-box"><div class="item__text-box"><div class="item__price">${item.balance + " " + item.currens}</div><div class="item__proc">+2,59%</div></div><img src="./public/icons/btc-icon.png" alt="Btc" class="item__img"></div><img src="./public/images/statistic-vector.png" alt="" class="item__status-vector"></div></div>`; total += (+item.balance) }; function maxBalanxe(array) { return [...array].sort((a, b) => +b.balance - +a.balance); }; for (let q of maxBalanxe(arr).slice(0, 3)) { data.datasets[0].data.push(q.balance); data.labels.push(q.name); data.datasets[0].backgroundColor.push(getRandomColor()); }; return [data, total]; }
+
+export function marketNews(arr, place) {
+   place.innerHTML = ""
+   for (let item of arr) {
+     let market_item = document.createElement("a")
+     let trans_row = document.createElement("div")
+     let market_img = document.createElement("img")
+     let market_title = document.createElement("p")
+     let market_text = document.createElement("p")
+     let canw_wrap = document.createElement("div")
+     let canvas = document.createElement("canvas")
+ 
+     market_item.classList.add("market_item")
+     trans_row.classList.add("trans-row")
+     market_title.classList.add("market_title")
+     canw_wrap.classList.add("canw_wrap")
+ 
+     market_item.href = item.amp_url
+     market_img.src = item.publisher.logo_url
+     market_img.alt = 'img'
+     market_title.innerHTML = item.publisher.name
+     market_text.innerHTML = item.title.slice(0, 70)
+ 
+     canw_wrap.append(canvas)
+     trans_row.append(market_img, market_title)
+     market_item.append(trans_row, market_text, canw_wrap)
+     place.append(market_item)
+     
+     let lineColor = Math.random().toFixed()
+     const ctx = canvas
+     ctx.height = 47
+     new Chart (ctx, {
+       type: "line",
+       data: {
+         labels: [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+         datasets: [{
+           data: Array.from({ length: 12 }, () => Math.floor(Math.random() * 12)),
+           fill: false,
+           pointRadius: 0
+         }],
+       },
+       options: {
+         scales: {
+           x: {
+             display: "false"
+           },
+           y: {
+             display: false
+           }
+         },
+         plugins: {
+           legend: {
+             display: false
+           }
+         },
+         elements: {
+           line: {
+             borderWidth: 3,
+             borderColor: lineColor > 0 ? "red" : '#00E8AC',
+             shadowColor: "red"
+ 
+           }
+         },
+       }
+     })
+   }
+ }
